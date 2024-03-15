@@ -1,0 +1,9 @@
+name: DonatorReclaim
+version: ${project.version}
+main: nl.chimpgamer.donatorreclaim.DonatorReclaim
+authors: [ChimpGamer]
+
+commands:
+  reclaim:
+    description: Reclaim your rewards as donator.
+    permission: donatorreclaim.commands.reclaim

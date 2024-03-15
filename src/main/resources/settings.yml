@@ -1,0 +1,12 @@
+onlyReclaimHighestRank: false
+executeRedeemOnFirstJoin: false
+
+ranks:
+  vip:
+    permission: 'donatorreclaim.rank.vip'
+    commands:
+    - broadcast %playername% has redeemed his %rank% rank!
+  god:
+    permission: 'donatorreclaim.rank.god'
+    commands:
+    - broadcast %playername% has redeemed his %rank% rank!
