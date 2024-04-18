@@ -2,6 +2,7 @@ name: DonatorReclaim
 version: ${project.version}
 main: nl.chimpgamer.donatorreclaim.DonatorReclaim
 authors: [ChimpGamer]
+folia-supported: true
 
 commands:
   reclaim:

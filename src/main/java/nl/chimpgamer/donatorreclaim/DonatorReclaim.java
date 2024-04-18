@@ -1,5 +1,8 @@
 package nl.chimpgamer.donatorreclaim;
 
+import com.tcoded.folialib.FoliaLib;
+import dev.rollczi.litecommands.bukkit.LiteCommandsBukkit;
+import nl.chimpgamer.donatorreclaim.commands.MainCommand;
 import nl.chimpgamer.donatorreclaim.commands.ReclaimCommand;
 import nl.chimpgamer.donatorreclaim.configuration.Donators;
 import nl.chimpgamer.donatorreclaim.configuration.Messages;
@@ -12,6 +15,7 @@ public final class DonatorReclaim extends JavaPlugin {
     private Settings settings;
     private Messages messages;
     private Donators donators;
+    private FoliaLib foliaLib;
 
     @Override
     public void onEnable() {
@@ -22,8 +26,15 @@ public final class DonatorReclaim extends JavaPlugin {
         this.initMessages();
         this.initDonators();
 
-        this.getCommand("reclaim").setExecutor(new ReclaimCommand(this));
+        // Initialize Folia library.
+        this.foliaLib = new FoliaLib(this);
+
+        //this.getCommand("reclaim").setExecutor(new ReclaimCommand(this));
         this.getServer().getPluginManager().registerEvents(new JoinListener(this), this);
+
+        LiteCommandsBukkit.builder("DonatorReclaim", this)
+                .commands(new MainCommand(this))
+                .build();
     }
 
     @Override
@@ -61,5 +72,9 @@ public final class DonatorReclaim extends JavaPlugin {
 
     public Donators getDonators() {
         return donators;
+    }
+
+    public FoliaLib getFoliaLib() {
+        return foliaLib;
     }
 }

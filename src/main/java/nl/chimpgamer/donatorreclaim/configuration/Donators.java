@@ -3,6 +3,7 @@ package nl.chimpgamer.donatorreclaim.configuration;
 import nl.chimpgamer.donatorreclaim.DonatorReclaim;
 import nl.chimpgamer.donatorreclaim.models.Rank;
 import nl.chimpgamer.donatorreclaim.utils.FileUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -58,10 +59,13 @@ public class Donators extends FileUtils {
     }
 
     public void redeemRank(Player player, Rank rank) {
-        CommandSender commandSender = donatorReclaim.getServer().getConsoleSender();
-        rank.getCommands().forEach(command -> donatorReclaim.getServer().dispatchCommand(commandSender, command
-                .replace("%playername%", player.getName())
-                .replace("%rank%", rank.getName())));
+        donatorReclaim.getFoliaLib().getImpl().runNextTick((task) -> {
+            CommandSender commandSender = Bukkit.getConsoleSender();
+
+            rank.getCommands().forEach(command -> Bukkit.dispatchCommand(commandSender, command
+                    .replace("%playername%", player.getName())
+                    .replace("%rank%", rank.getName())));
+        });
 
         List<String> redeemed = this.hasRedeemed(player);
         redeemed.add(rank.getName().toLowerCase());
@@ -69,6 +73,7 @@ public class Donators extends FileUtils {
         this.save();
     }
 
+    // Remove unused code.
     public void upgradeRank(Player player, Rank rank) {
         CommandSender commandSender = donatorReclaim.getServer().getConsoleSender();
         rank.getUpgradeCommands().forEach(command -> donatorReclaim.getServer().dispatchCommand(commandSender, command
