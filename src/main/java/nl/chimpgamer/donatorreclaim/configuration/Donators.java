@@ -27,17 +27,6 @@ public class Donators extends FileUtils {
         setupFile();
     }
 
-    public void executeReclaim(Player player, Rank rank) {
-        if (this.hasRedeemed(player, rank)) {
-            player.sendMessage("&6You've already claimed your rank.");
-            return;
-        }
-
-        if (rank.canUpgrade()) {
-
-        }
-    }
-
     public boolean donatorExists(OfflinePlayer player) {
         ConfigurationSection section = this.getConfig().getConfigurationSection("donators");
         return section != null && section.getKeys(false).contains(player.getUniqueId().toString());
@@ -66,19 +55,6 @@ public class Donators extends FileUtils {
                     .replace("%playername%", player.getName())
                     .replace("%rank%", rank.getName())));
         });
-
-        List<String> redeemed = this.hasRedeemed(player);
-        redeemed.add(rank.getName().toLowerCase());
-        this.set("donators." + player.getUniqueId().toString(), redeemed);
-        this.save();
-    }
-
-    // Remove unused code.
-    public void upgradeRank(Player player, Rank rank) {
-        CommandSender commandSender = donatorReclaim.getServer().getConsoleSender();
-        rank.getUpgradeCommands().forEach(command -> donatorReclaim.getServer().dispatchCommand(commandSender, command
-                .replace("%playername%", player.getName())
-                .replace("%rank%", rank.getName())));
 
         List<String> redeemed = this.hasRedeemed(player);
         redeemed.add(rank.getName().toLowerCase());

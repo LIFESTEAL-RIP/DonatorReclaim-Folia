@@ -2,12 +2,13 @@ package nl.chimpgamer.donatorreclaim;
 
 import com.tcoded.folialib.FoliaLib;
 import dev.rollczi.litecommands.bukkit.LiteCommandsBukkit;
+
 import nl.chimpgamer.donatorreclaim.commands.MainCommand;
-import nl.chimpgamer.donatorreclaim.commands.ReclaimCommand;
 import nl.chimpgamer.donatorreclaim.configuration.Donators;
 import nl.chimpgamer.donatorreclaim.configuration.Messages;
 import nl.chimpgamer.donatorreclaim.configuration.Settings;
 import nl.chimpgamer.donatorreclaim.listeners.JoinListener;
+
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,8 +20,6 @@ public final class DonatorReclaim extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
-
         getDataFolder().mkdirs();
         this.initSettings();
         this.initMessages();
@@ -29,9 +28,10 @@ public final class DonatorReclaim extends JavaPlugin {
         // Initialize Folia library.
         this.foliaLib = new FoliaLib(this);
 
-        //this.getCommand("reclaim").setExecutor(new ReclaimCommand(this));
+        // Register events
         this.getServer().getPluginManager().registerEvents(new JoinListener(this), this);
 
+        // Register commands
         LiteCommandsBukkit.builder("DonatorReclaim", this)
                 .commands(new MainCommand(this))
                 .build();
@@ -39,11 +39,6 @@ public final class DonatorReclaim extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
-
-        this.settings = null;
-        this.messages = null;
-        this.donators = null;
         HandlerList.unregisterAll(this);
     }
 
