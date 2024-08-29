@@ -15,6 +15,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Command(name = "reclaim")
@@ -28,55 +30,51 @@ public class MainCommand {
 
     @Execute()
     public void reclaimCommand(@Context Player player) {
-        if (donatorReclaim.getSettings().isOnlyReclaimHighestRank()) {
-            Rank rank = donatorReclaim.getSettings().getHighestAvailableRank(player);
-            if (rank == null) {
-                player.sendMessage(donatorReclaim.getMessages().getString(Message.NOTHINGTORECLAIM));
-                return;
-            }
+        List<Rank> ranks = new ArrayList<>();
 
-            if (donatorReclaim.getDonators().hasRedeemed(player, rank)) {
-                player.sendMessage(donatorReclaim.getMessages().getString(Message.ALREADYCLAIMEDRANK)
-                        .replace("%rank%", rank.getName()));
+        boolean highestOnly = donatorReclaim.getSettings().isOnlyReclaimHighestRank();
+        if (highestOnly) {
+            Rank rank = donatorReclaim.getSettings().getHighestAvailableRank(player);
+            if (rank != null) {
+                ranks.add(rank);
             }
-            else {
-                donatorReclaim.getDonators().redeemRank(player, rank);
-                player.sendMessage(donatorReclaim.getMessages().getString(Message.SUCCESSFULLYRECLAIMEDRANK)
-                        .replace("%rank%", rank.getName()));
-            }
+        } else {
+            ranks.addAll(donatorReclaim.getSettings().getAvailableRanks(player));
         }
-        else {
-            for (Rank rank : donatorReclaim.getSettings().getAvailableRanks(player)) {
-                if (donatorReclaim.getDonators().hasRedeemed(player, rank)) {
-                    player.sendMessage(donatorReclaim.getMessages().getString(Message.ALREADYCLAIMEDRANK)
-                            .replace("%rank%", rank.getName()));
-                }
-                else {
-                    donatorReclaim.getDonators().redeemRank(player, rank);
-                    player.sendMessage(donatorReclaim.getMessages().getString(Message.SUCCESSFULLYRECLAIMEDRANK)
-                            .replace("%rank%", rank.getName()));
-                }
+
+        if (ranks.isEmpty()) {
+            player.sendMessage(donatorReclaim.getMessages().getString(Message.NOTHINGTORECLAIM));
+            return;
+        }
+
+        for (Rank rank : ranks) {
+            if (donatorReclaim.getDonators().hasRedeemed(player, rank)) {
+                player.sendMessage(donatorReclaim.getMessages().getString(Message.ALREADYCLAIMEDRANK).replace("%rank%", rank.getName()));
+            } else {
+                donatorReclaim.getDonators().redeemRank(player, rank);
+                player.sendMessage(donatorReclaim.getMessages().getString(Message.SUCCESSFULLYRECLAIMEDRANK).replace("%rank%", rank.getName()));
             }
         }
     }
 
     @Execute(name = "reload")
     public void reloadCommand(@Context CommandSender sender) {
-        if (sender.hasPermission("donatorreclaim.commands.reclaim.reload")) {
-            donatorReclaim.getSettings().reload();
-            donatorReclaim.getMessages().reload();
-
-            sender.sendMessage(donatorReclaim.getMessages().getString(Message.RELOAD));
-        }
-        else {
+        if (!sender.hasPermission("donatorreclaim.commands.reclaim.reload")) {
             sender.sendMessage(donatorReclaim.getMessages().getString(Message.NOPERMISSION));
+            return;
         }
+
+        donatorReclaim.getSettings().reload();
+        donatorReclaim.getMessages().reload();
+
+        sender.sendMessage(donatorReclaim.getMessages().getString(Message.RELOAD));
     }
 
     @Execute(name = "reset")
     public void resetCommand(@Context Player sender, @Arg("all/player") String player, @OptionalArg("rank") String rankName) {
         if (!sender.hasPermission("donatorreclaim.commands.reclaim.reset")) {
             sender.sendMessage(donatorReclaim.getMessages().getString(Message.NOPERMISSION));
+            return;
         }
 
         if (player.equalsIgnoreCase("all")) {
@@ -87,31 +85,25 @@ public class MainCommand {
         final OfflinePlayer target;
         if (Utils.isUUID(player)) {
             target = Bukkit.getOfflinePlayer(UUID.fromString(player));
-        }
-        else {
+        } else {
             target = Bukkit.getPlayer(player);
         }
 
         if (target == null) {
-            sender.sendMessage(donatorReclaim.getMessages().getString(Message.PLAYEROFFLINE)
-                    .replace("%player%", player));
-
+            sender.sendMessage(donatorReclaim.getMessages().getString(Message.PLAYEROFFLINE).replace("%player%", player));
             return;
         }
 
         if (rankName != null) {
-                Rank rank = donatorReclaim.getSettings().getRank(rankName);
-                if (rank == null) {
-                    sender.sendMessage(donatorReclaim.getMessages().getString(Message.RECLAIMRANKINVALID)
-                            .replace("%rank%", rankName));
+            Rank rank = donatorReclaim.getSettings().getRank(rankName);
+            if (rank == null) {
+                sender.sendMessage(donatorReclaim.getMessages().getString(Message.RECLAIMRANKINVALID).replace("%rank%", rankName));
+                return;
+            }
 
-                    return;
-                }
-
-                donatorReclaim.getDonators().removeRank(target, rank);
-        }
-        else {
-                donatorReclaim.getDonators().reset(target.getUniqueId());
+            donatorReclaim.getDonators().removeRank(target, rank);
+        } else {
+            donatorReclaim.getDonators().reset(target.getUniqueId());
         }
     }
 

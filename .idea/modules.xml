@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/DonatorReclaim.main.iml" filepath="$PROJECT_DIR$/.idea/modules/DonatorReclaim.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/DonatorReclaim.test.iml" filepath="$PROJECT_DIR$/.idea/modules/DonatorReclaim.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/nl.chimpgamer.DonatorReclaim.main.iml" filepath="$PROJECT_DIR$/.idea/modules/nl.chimpgamer.DonatorReclaim.main.iml" />
     </modules>
   </component>
 </project>
